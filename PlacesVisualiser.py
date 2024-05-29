@@ -93,8 +93,8 @@ def visualiseMeasurePoints(pointsDirectory, numberOfRows, numberOfColumns):
 if __name__ == "__main__":
     pointsDirectory = 'generatedPoints/'
     # number of "steps" (resolution of the division of the area --> greater value gives more details)
-    numberOfColumns = 15
-    numberOfRows = 3
+    numberOfColumns = 1
+    numberOfRows = 1
 
     #visualiseCollectedPoints()
     visualiseMeasurePoints(pointsDirectory, numberOfRows, numberOfColumns)

@@ -127,14 +127,14 @@ if __name__ == "__main__":
     savingDirectory = "generatedPoints/"
 
     # Point A (left upper corner)
-    pointA = (54.44856818820764, 18.42538889812534)
+    pointA = (-32.299252, -61.411593)
 
     # Point B (right bottom corner)
-    pointB = (54.26192258463519, 18.943841464421837)
-
+    pointB = (-32.299253, -61.411592)
+    
     # number of "steps" (resolution of the division of the area --> greater value gives more details)
-    numberOfColumns = 15
-    numberOfRows = 3
+    numberOfColumns = 1
+    numberOfRows = 1
 
     if checkLocationOfBorderPoints(pointA, pointB):
         borderPoints = setUpBorderPoints(savingDirectory, pointA, pointB)

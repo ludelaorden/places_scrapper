@@ -12,13 +12,25 @@ from PlacesVisualiser import *
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.actions.wheel_input import ScrollOrigin
 
-googleAcceptButtonClicked = False
+from selenium.webdriver.chrome.service import Service
+
+googleAcceptButtonClicked = True
+
+# Assuming chromedriver is in your PATH or you have the path to it
+service = Service('chromedriver.exe')  # Replace 'chromedriver.exe' with your actual path if not in PATH
+
+options = webdriver.ChromeOptions()
+# options.add_argument('headless')  # Make browser open in background
+service.start()  # Start the ChromeDriver service
+driver = webdriver.Chrome(service=service, options=options)
+
 
 # setUpWebDriver
-options = webdriver.ChromeOptions()
-options.add_argument('headless')  # Make browser open in background
-# driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
-driver = webdriver.Chrome(ChromeDriverManager().install())
+# options = webdriver.ChromeOptions()
+# options.add_argument('headless')  # Make browser open in background
+# # driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
+# driver = webdriver.Chrome(service=Service('chromedriver.exe'), options=options)  # Replace 'chromedriver.exe' with your actual path if not in PATH
+# driver = webdriver.Chrome(ChromeDriverManager().install())
 
 
 def check_exists_by_xpath(xpath):
@@ -67,13 +79,14 @@ def searchForPlace(url, typeOfPlace):
     """
     global googleAcceptButtonClicked
     driver.get(url)
+    time.sleep(20)
 
     # only at the first page click the "accept all" ("zaakceptuj wszystko") button
-    if not googleAcceptButtonClicked:
-        clickAcceptAllButton()
+    # if not googleAcceptButtonClicked:
+    #     clickAcceptAllButton()
 
     # scroll down left menu
-    scrollDownLeftMenuOnGoogleMaps(counter=3, waitingTime=2)
+    scrollDownLeftMenuOnGoogleMaps(counter=3, waitingTime=10)
 
     # get the source code of the page
     page_content = driver.page_source
@@ -81,7 +94,7 @@ def searchForPlace(url, typeOfPlace):
 
     placesResults = []
     # save the search results into a dictionary
-    for el in response.xpath('//div[contains(@aria-label, "Results for")]/div/div[./a]'):
+    for el in response.xpath('//div[contains(@aria-label, "Resultados")]/div/div[./a]'):
         placesResults.append({
             'link': el.xpath('./a/@href').extract_first(''),
             'title': el.xpath('./a/@aria-label').extract_first(''),
@@ -97,8 +110,9 @@ def clickAcceptAllButton():
     the webdriver.
     """
     global googleAcceptButtonClicked
-    button_path = '//*[@id="yDmH0d"]/c-wiz/div/div/div/div[2]/div[1]/div[3]/div[1]/div[1]/form[2]/div/div/button'
-    wait = WebDriverWait(driver, 1)
+    # button_path = '//*[@id="yDmH0d"]/c-wiz/div/div/div/div[2]/div[1]/div[3]/div[1]/div[1]/form[2]/div/div/button'
+    button_path = '//button[text()="Aceptar todo"]'
+    wait = WebDriverWait(driver, 10)
     button = wait.until(EC.visibility_of_element_located((By.XPATH, button_path)))
     button.click()
     googleAcceptButtonClicked = True
@@ -144,7 +158,7 @@ def generateUrls(typeOfPlace):
     :return: list of generated URLs containing type of place, searched location, and zoom of searching
     """
     pointsDirectory = "generatedPoints/"
-    points_df = pd.read_csv(pointsDirectory + "Points_size_15r_15c_optimized.csv", index_col=False)
+    points_df = pd.read_csv(pointsDirectory + "measure_points_1r_1c.csv", index_col=False)
 
     base = 'https://www.google.com/maps/search/'
 
@@ -169,7 +183,8 @@ if __name__ == "__main__":
     types_of_places = sys.argv[1:]
 
     if len(types_of_places) == 0:
-        types_of_places = ['bar', 'cinema', 'office']  # set the types of searched places
+        # types_of_places = ['escuela', 'facultad', 'bus stop', 'parque', 'panaderia']
+        types_of_places = ['restaurant', 'parque']
 
     print(types_of_places)
     for typeOfPlace in types_of_places:
@@ -182,6 +197,7 @@ if __name__ == "__main__":
         progressCounter = 0
         for url in urls:
             new_places = searchForPlace(url, typeOfPlace)
+            # breakpoint()
             list_of_places += new_places  # concat two lists
             progressCounter += 1
             print("progress: " + str(round(100 * progressCounter / len(urls), 2)) + "%")
