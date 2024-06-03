@@ -25,14 +25,6 @@ service.start()  # Start the ChromeDriver service
 driver = webdriver.Chrome(service=service, options=options)
 
 
-# setUpWebDriver
-# options = webdriver.ChromeOptions()
-# options.add_argument('headless')  # Make browser open in background
-# # driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
-# driver = webdriver.Chrome(service=Service('chromedriver.exe'), options=options)  # Replace 'chromedriver.exe' with your actual path if not in PATH
-# driver = webdriver.Chrome(ChromeDriverManager().install())
-
-
 def check_exists_by_xpath(xpath):
     """
     This function checks if the element specified by the xpath is present at the website.
@@ -79,11 +71,7 @@ def searchForPlace(url, typeOfPlace):
     """
     global googleAcceptButtonClicked
     driver.get(url)
-    time.sleep(20)
-
-    # only at the first page click the "accept all" ("zaakceptuj wszystko") button
-    # if not googleAcceptButtonClicked:
-    #     clickAcceptAllButton()
+    time.sleep(2)
 
     # scroll down left menu
     scrollDownLeftMenuOnGoogleMaps(counter=3, waitingTime=10)
@@ -110,7 +98,6 @@ def clickAcceptAllButton():
     the webdriver.
     """
     global googleAcceptButtonClicked
-    # button_path = '//*[@id="yDmH0d"]/c-wiz/div/div/div/div[2]/div[1]/div[3]/div[1]/div[1]/form[2]/div/div/button'
     button_path = '//button[text()="Aceptar todo"]'
     wait = WebDriverWait(driver, 10)
     button = wait.until(EC.visibility_of_element_located((By.XPATH, button_path)))
@@ -183,8 +170,9 @@ if __name__ == "__main__":
     types_of_places = sys.argv[1:]
 
     if len(types_of_places) == 0:
-        # types_of_places = ['escuela', 'facultad', 'bus stop', 'parque', 'panaderia']
-        types_of_places = ['restaurant', 'parque']
+        # types_of_places = ['escuela', 'facultad', 'bus stop', 'parque']
+        types_of_places = ['parque']
+
 
     print(types_of_places)
     for typeOfPlace in types_of_places:
@@ -197,7 +185,6 @@ if __name__ == "__main__":
         progressCounter = 0
         for url in urls:
             new_places = searchForPlace(url, typeOfPlace)
-            # breakpoint()
             list_of_places += new_places  # concat two lists
             progressCounter += 1
             print("progress: " + str(round(100 * progressCounter / len(urls), 2)) + "%")
